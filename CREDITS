@@ -1,0 +1,39 @@
+IMAGE CREDITS & SLOTS
+=====================
+
+Logo
+----
+assets/logo-*.png, assets/favicon*, assets/apple-touch-icon.png, assets/og-image.jpg
+  Source: bogri_logo.png (Google Drive fileId 1rS68V4pednvkV98FSTIDP1pBvU3wums1),
+  owned by office@bogrisolutions.com. Processed (background removed, resized,
+  white variant + favicons generated). Brand asset — no third-party attribution.
+
+Photo slots (currently brand-styled placeholders)
+-------------------------------------------------
+The images in assets/img/ are temporary, on-brand placeholder graphics generated
+for this build. They are NOT photographs and need no attribution. Replace any of
+them with your own photo (or a royalty-free one) by OVERWRITING the file with the
+SAME name — no code changes needed.
+
+Slot               File                              Suggested royalty-free search
+-----------------  --------------------------------  ----------------------------------------
+Hero background    assets/img/hero.webp(+.jpg)       "container ship port" / "shipping containers aerial"
+Sea freight        assets/img/sea-fcl.webp(+.jpg)    "shipping containers" / "container terminal"
+Road freight       assets/img/road.webp(+.jpg)       "freight truck highway"
+Air freight        assets/img/air.webp(+.jpg)        "cargo airplane loading" / "air cargo"
+Air Charter        assets/img/air-charter.webp(+.jpg)"cargo aircraft tarmac"
+OBC                assets/img/obc.webp(+.jpg)         "courier airport" / "business traveler airport"
+Customs            assets/img/customs.webp(+.jpg)     "customs warehouse" / "logistics paperwork"
+Door-to-door       assets/img/door-to-door.webp(+.jpg)"warehouse logistics" / "delivery van"
+Coverage           assets/img/coverage.webp(+.jpg)    "world map logistics" / "global shipping"
+About              assets/img/about.webp(+.jpg)       "logistics team" / "warehouse"
+
+Where to get royalty-free, commercial-use photos:
+  - Unsplash  https://unsplash.com/  (Unsplash License — free for commercial use, attribution appreciated)
+  - Pexels    https://www.pexels.com/ (Pexels License — free for commercial use)
+
+If you use a photo that requests attribution, add a line here, e.g.:
+  assets/img/hero.webp — Photo by <Author> on Unsplash (<url>)
+
+Toggle the little filename tags shown on each slot by setting
+SHOW_IMAGE_SLOT_LABELS = false near the top of assets/js/main.js.

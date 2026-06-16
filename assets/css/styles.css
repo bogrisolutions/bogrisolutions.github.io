@@ -239,6 +239,12 @@ img{max-width:100%;display:block}
 
 .fcl-only{display:none}
 .form.show-fcl .fcl-only{display:flex}
+.zip-only{display:none}
+.form.show-zip .zip-only{display:flex}
+.dg-only{display:none}
+.form.show-dg .dg-only{display:flex}
+.check{display:flex;align-items:center;gap:.55rem;font-size:.9rem;font-weight:600;color:var(--navy);cursor:pointer}
+.check input{width:18px;height:18px;flex:0 0 auto;accent-color:var(--navy);cursor:pointer}
 
 .form__group-label{grid-column:1/-1;font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--azure);margin-top:.4rem;padding-top:.6rem;border-top:1px solid var(--line)}
 

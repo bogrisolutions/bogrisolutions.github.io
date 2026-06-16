@@ -357,6 +357,14 @@
             <option value="unsure" data-i18n="form.incoterm.unsure">Не сум сигурен/на</option>
           </select>
         </div>
+        <div class="field zip-only">
+          <label for="pickup_zip" data-i18n="form.pickup_zip">Поштенски код — подигнување</label>
+          <input id="pickup_zip" name="pickup_zip" type="text" placeholder=" " autocomplete="postal-code">
+        </div>
+        <div class="field zip-only">
+          <label for="delivery_zip" data-i18n="form.delivery_zip">Поштенски код — испорака</label>
+          <input id="delivery_zip" name="delivery_zip" type="text" placeholder=" " autocomplete="postal-code">
+        </div>
 
         <div class="field field--full">
           <label for="goods_description" data-i18n="form.goods">Опис на стоката <span class="req">*</span></label>
@@ -375,6 +383,14 @@
         <div class="field field--full">
           <label for="dimensions" data-i18n="form.dims">Димензии <span class="hint" data-i18n="form.dims.h">(Д×Ш×В по колет)</span></label>
           <input id="dimensions" name="dimensions" type="text" placeholder=" ">
+        </div>
+
+        <div class="field field--full">
+          <label class="check"><input type="checkbox" id="dangerous_goods" name="dangerous_goods" value="yes"><span data-i18n="form.dg">Опасни материи (ADR / IMDG / IATA DGR)</span></label>
+        </div>
+        <div class="field field--full dg-only">
+          <label for="un_number" data-i18n="form.dg.un">UN број / класа <span class="hint" data-i18n="form.dg.un.h">(пр. UN1263, класа 3)</span></label>
+          <input id="un_number" name="un_number" type="text" placeholder=" ">
         </div>
 
         <div class="field fcl-only">

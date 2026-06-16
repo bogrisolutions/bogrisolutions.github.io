@@ -53,6 +53,8 @@ const I18N = {
     "form.g.route":"Релација","form.origin":"Потекло (земја / град / пристаниште)","form.dest":"Дестинација (земја / град / пристаниште)",
     "form.g.ship":"Пратка","form.mode":"Вид транспорт","form.mode.ph":"Изберете…",
     "form.incoterm":"Incoterm","form.incoterm.ph":"Изберете…","form.incoterm.unsure":"Не сум сигурен/на",
+    "form.pickup_zip":"Поштенски код — подигнување","form.delivery_zip":"Поштенски код — испорака",
+    "form.dg":"Опасни материи (ADR / IMDG / IATA DGR)","form.dg.un":"UN број / класа","form.dg.un.h":"(пр. UN1263, класа 3)",
     "form.goods":"Опис на стоката","form.weight":"Тежина (kg)","form.volume":"Волумен (m³ / CBM)",
     "form.dims":"Димензии","form.dims.h":"(Д×Ш×В по колет)","form.ctype":"Тип контејнер","form.cqty":"Број контејнери",
     "form.ready":"Подготвена на (датум)","form.empty":" ","form.fastnote":"⚡ За Air Charter / OBC препорачуваме и телефонски повик.",
@@ -104,6 +106,8 @@ const I18N = {
     "form.g.route":"Route","form.origin":"Origin (country / city / port)","form.dest":"Destination (country / city / port)",
     "form.g.ship":"Shipment","form.mode":"Transport mode","form.mode.ph":"Select…",
     "form.incoterm":"Incoterm","form.incoterm.ph":"Select…","form.incoterm.unsure":"Not sure",
+    "form.pickup_zip":"Pickup postal code","form.delivery_zip":"Delivery postal code",
+    "form.dg":"Dangerous goods (ADR / IMDG / IATA DGR)","form.dg.un":"UN number / class","form.dg.un.h":"(e.g. UN1263, class 3)",
     "form.goods":"Goods description","form.weight":"Weight (kg)","form.volume":"Volume (m³ / CBM)",
     "form.dims":"Dimensions","form.dims.h":"(L×W×H per package)","form.ctype":"Container type","form.cqty":"Number of containers",
     "form.ready":"Ready date","form.empty":" ","form.fastnote":"⚡ For Air Charter / OBC we recommend a phone call too.",
@@ -194,6 +198,19 @@ function setupForm(){
     form.classList.toggle("show-fcl", modeSel.value === "sea_fcl");
   });
 
+  // show pickup/delivery ZIP for door incoterms
+  const incoSel = form.querySelector("#incoterm");
+  const DOOR_INCOTERMS = ["EXW","FCA","CPT","CIP","DAP","DPU","DDP","unsure"];
+  if(incoSel) incoSel.addEventListener("change", ()=>{
+    form.classList.toggle("show-zip", DOOR_INCOTERMS.includes(incoSel.value));
+  });
+
+  // reveal UN number / class when dangerous goods is checked
+  const dgChk = form.querySelector("#dangerous_goods");
+  if(dgChk) dgChk.addEventListener("change", ()=>{
+    form.classList.toggle("show-dg", dgChk.checked);
+  });
+
   const REQUIRED = ["contact_name","email","phone","origin","destination","mode","goods_description"];
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -237,8 +254,11 @@ function setupForm(){
       "Дестинација/Destination: "+(data.destination||""),
       "Вид/Mode: "+(data.mode||""),
       "Incoterm: "+(data.incoterm||""),
+      "Поштенски подигнување/Pickup ZIP: "+(data.pickup_zip||""),
+      "Поштенски испорака/Delivery ZIP: "+(data.delivery_zip||""),
       "",
       "Стока/Goods: "+(data.goods_description||""),
+      "Опасни материи/Dangerous goods: "+(data.dangerous_goods ? ("Да/Yes — "+(data.un_number||"")) : "Не/No"),
       "Тежина/Weight (kg): "+(data.weight_kg||""),
       "Волумен/Volume (CBM): "+(data.volume_cbm||""),
       "Димензии/Dimensions: "+(data.dimensions||""),
@@ -289,7 +309,7 @@ function setupForm(){
       if(!res.ok) throw new Error("HTTP "+res.status);
       showOk();
       form.reset();
-      form.classList.remove("show-fcl");
+      form.classList.remove("show-fcl","show-zip","show-dg");
     }catch(err){
       clearTimeout(timer);
       showErr(mailto);

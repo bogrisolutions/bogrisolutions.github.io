@@ -324,21 +324,10 @@ function setupForm(){
 (function(){
   const fab = document.getElementById('fabRfq');
   if (!fab) return;
-
-  // Observer 1: hero CTA — once it scrolls out, show FAB
-  const heroCta = document.querySelector('.hero__cta');
-  // Observer 2: contact section — when on screen, hide FAB (user already sees the form)
   const contact = document.getElementById('contact');
-
-  let heroOut = false, contactIn = false;
-
-  function update(){
-    if (heroOut && !contactIn) fab.classList.add('show');
-    else fab.classList.remove('show');
-  }
-
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([e]) => { heroOut = !e.isIntersecting; update(); }, { threshold: 0 }).observe(heroCta || document.querySelector('.hero'));
-    if (contact) new IntersectionObserver(([e]) => { contactIn = e.isIntersecting; update(); }, { threshold: 0.05 }).observe(contact);
+  if (contact && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => {
+      fab.classList.toggle('hide', e.isIntersecting);
+    }, { threshold: 0.05 }).observe(contact);
   }
 })();

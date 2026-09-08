@@ -301,13 +301,12 @@ img{max-width:100%;display:block}
   background:var(--azure);color:#fff;
   box-shadow:0 6px 24px rgba(27,127,176,.42),0 2px 6px rgba(0,0,0,.12);
   text-decoration:none;
-  transform:translateY(80px);opacity:0;
+  transform:translateY(0);opacity:1;
   transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s ease,background .15s ease;
-  pointer-events:none;
   white-space:nowrap;
 }
-.fab-rfq.show{
-  transform:translateY(0);opacity:1;pointer-events:auto;
+.fab-rfq.hide{
+  transform:translateY(80px);opacity:0;pointer-events:none;
 }
 .fab-rfq:hover{background:var(--azure-600);text-decoration:none;transform:translateY(-2px)}
 .fab-rfq:active{transform:translateY(0)}

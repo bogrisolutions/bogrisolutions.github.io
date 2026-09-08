@@ -628,4 +628,80 @@ document.addEventListener('DOMContentLoaded', function() {
   _acSetup('dest_country');
   _acCitySetup('origin_city', 'origin_country');
   _acCitySetup('dest_city', 'dest_country');
+  _acZipSetup('pickup_zip', 'origin_country', 'origin_city');
+  _acZipSetup('delivery_zip', 'dest_country', 'dest_city');
 });
+
+// BOG-241: postal code autocomplete for pickup_zip / delivery_zip
+function _acZipSetup(inputId, countryInputId, cityInputId) {
+  var inp = document.getElementById(inputId);
+  if (!inp) return;
+  var wrap = document.createElement('div');
+  wrap.style.position = 'relative';
+  inp.parentNode.insertBefore(wrap, inp);
+  wrap.appendChild(inp);
+  var dd = document.createElement('div');
+  dd.className = 'ac-dd';
+  dd.style.cssText = 'display:none;position:absolute;left:0;right:0;top:100%;z-index:100';
+  wrap.appendChild(dd);
+  var _hi = -1, _items = [], _to = null;
+
+  function show(arr, q) {
+    _items = arr; _hi = -1;
+    if (!arr.length) { dd.style.display = 'none'; return; }
+    var ql = q.toLowerCase();
+    dd.innerHTML = arr.map(function(v, i) {
+      var label = v.zip + ' — ' + v.place;
+      var idx = label.toLowerCase().indexOf(ql);
+      var ht = idx >= 0 ? (label.slice(0, idx) + '<b>' + label.slice(idx, idx + q.length) + '</b>' + label.slice(idx + q.length)) : label;
+      return '<div class="ac-opt" data-i="' + i + '">' + ht + '</div>';
+    }).join('');
+    dd.style.display = 'block';
+    dd.querySelectorAll('.ac-opt').forEach(function(opt) {
+      opt.addEventListener('mousedown', function(e) { e.preventDefault(); pick(Number(this.dataset.i)); });
+      opt.addEventListener('touchstart', function(e) { e.preventDefault(); pick(Number(this.dataset.i)); }, {passive:false});
+    });
+  }
+  function hide() { dd.style.display = 'none'; dd.innerHTML = ''; _items = []; _hi = -1; }
+  function pick(i) {
+    if (!_items[i]) return;
+    inp.value = _items[i].zip;
+    // auto-fill city if empty
+    var cityInp = document.getElementById(cityInputId);
+    if (cityInp && !cityInp.value.trim()) cityInp.value = _items[i].place;
+    hide();
+  }
+
+  function fetchZips(q) {
+    var country = (document.getElementById(countryInputId) || {}).value || '';
+    var url = RFQ_ENDPOINT.replace('website-rfq', 'website-zip-suggest') + '?q=' + encodeURIComponent(q);
+    if (country) url += '&country=' + encodeURIComponent(country);
+    fetch(url).then(function(r) { return r.json(); }).then(function(d) {
+      if (d.ok && d.results) show(d.results, q);
+      else hide();
+    }).catch(function() { hide(); });
+  }
+
+  inp.addEventListener('input', function() {
+    var v = inp.value.trim();
+    if (v.length < 2) { hide(); return; }
+    clearTimeout(_to);
+    _to = setTimeout(function() { fetchZips(v); }, 200);
+  });
+  inp.addEventListener('focus', function() {
+    var v = inp.value.trim();
+    if (v.length >= 2) { clearTimeout(_to); _to = setTimeout(function() { fetchZips(v); }, 100); }
+  });
+  inp.addEventListener('blur', function() { setTimeout(hide, 200); });
+  inp.addEventListener('keydown', function(e) {
+    if (dd.style.display === 'none' || !_items.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); _hi = Math.min(_hi + 1, _items.length - 1); hilite(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); _hi = Math.max(_hi - 1, 0); hilite(); }
+    else if (e.key === 'Enter' && _hi >= 0) { e.preventDefault(); pick(_hi); }
+    else if (e.key === 'Escape') { hide(); }
+  });
+  function hilite() {
+    dd.querySelectorAll('.ac-opt').forEach(function(o, i) { o.classList.toggle('hi', i === _hi); });
+    if (_hi >= 0 && dd.children[_hi]) dd.children[_hi].scrollIntoView({ block: 'nearest' });
+  }
+}

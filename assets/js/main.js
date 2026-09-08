@@ -705,3 +705,55 @@ function _acZipSetup(inputId, countryInputId, cityInputId) {
     if (_hi >= 0 && dd.children[_hi]) dd.children[_hi].scrollIntoView({ block: 'nearest' });
   }
 }
+
+// BOG-241: dynamic ZIP placeholder hints per country
+var _ZIP_HINTS = {
+  'Albania':'e.g. 1001','Argentina':'e.g. C1420','Australia':'e.g. 2000','Austria':'e.g. 1010',
+  'Bangladesh':'e.g. 1205','Belarus':'e.g. 220004','Belgium':'e.g. 1000','Bolivia':'e.g. 0101',
+  'Bosnia and Herzegovina':'e.g. 71000','Brazil':'e.g. 01310-100','Bulgaria':'e.g. 1000',
+  'Cambodia':'e.g. 12000','Canada':'e.g. M5V 2T6','Chile':'e.g. 8320000','China':'e.g. 200000',
+  'Colombia':'e.g. 110111','Costa Rica':'e.g. 10101','Croatia':'e.g. 10000',
+  'Cuba':'e.g. 10100','Cyprus':'e.g. 1010','Czech Republic':'e.g. 110 00',
+  'Denmark':'e.g. 1050','Dominican Republic':'e.g. 10101',
+  'Ecuador':'e.g. 170150','Egypt':'e.g. 11511','El Salvador':'e.g. 1101',
+  'Estonia':'e.g. 10111','Ethiopia':'e.g. 1000','Finland':'e.g. 00100',
+  'France':'e.g. 75001','Georgia':'e.g. 0105','Germany':'e.g. 20095',
+  'Ghana':'e.g. GA184','Greece':'e.g. 10431','Guatemala':'e.g. 01001',
+  'Honduras':'e.g. 11101','Hong Kong':'(not used)','Hungary':'e.g. 1011',
+  'Iceland':'e.g. 101','India':'e.g. 400001','Indonesia':'e.g. 10110',
+  'Iran':'e.g. 1131653111','Iraq':'e.g. 10001','Ireland':'e.g. D02 Y006',
+  'Israel':'e.g. 6100000','Italy':'e.g. 20121','Japan':'e.g. 100-0001',
+  'Jordan':'e.g. 11110','Kazakhstan':'e.g. 010000','Kenya':'e.g. 00100',
+  'Kosovo':'e.g. 10000','Kuwait':'e.g. 13001','Latvia':'e.g. LV-1010',
+  'Lebanon':'e.g. 1100','Lithuania':'e.g. LT-01001','Luxembourg':'e.g. 1009',
+  'North Macedonia':'e.g. 1000','Malaysia':'e.g. 50000','Malta':'e.g. VLT 1000',
+  'Mexico':'e.g. 06600','Moldova':'e.g. MD-2001','Mongolia':'e.g. 14200',
+  'Montenegro':'e.g. 81000','Morocco':'e.g. 10000','Netherlands':'e.g. 1011 AB',
+  'New Zealand':'e.g. 6011','Nigeria':'e.g. 100001','Norway':'e.g. 0150',
+  'Oman':'e.g. 100','Pakistan':'e.g. 44000','Panama':'e.g. 0801',
+  'Paraguay':'e.g. 1209','Peru':'e.g. 15001','Philippines':'e.g. 1000',
+  'Poland':'e.g. 00-001','Portugal':'e.g. 1000-001','Qatar':'(not used)',
+  'Romania':'e.g. 010011','Russia':'e.g. 101000','Saudi Arabia':'e.g. 11564',
+  'Senegal':'e.g. 10000','Serbia':'e.g. 11000','Singapore':'e.g. 048580',
+  'Slovakia':'e.g. 811 01','Slovenia':'e.g. 1000','South Africa':'e.g. 2000',
+  'South Korea':'e.g. 04524','Spain':'e.g. 28001','Sri Lanka':'e.g. 00100',
+  'Sweden':'e.g. 111 21','Switzerland':'e.g. 8001','Taiwan':'e.g. 100',
+  'Thailand':'e.g. 10100','Tunisia':'e.g. 1000','Turkey':'e.g. 34000',
+  'UAE':'(not used)','UK':'e.g. SW1A 1AA','Ukraine':'e.g. 01001',
+  'USA':'e.g. 10001','Uzbekistan':'e.g. 100000','Vietnam':'e.g. 100000'
+};
+function _zipPlaceholderWire(countryInputId, zipInputId) {
+  var co = document.getElementById(countryInputId);
+  var zi = document.getElementById(zipInputId);
+  if (!co || !zi) return;
+  function upd() {
+    var v = (co.value || '').trim();
+    zi.placeholder = _ZIP_HINTS[v] || ' ';
+  }
+  co.addEventListener('input', upd);
+  co.addEventListener('change', upd);
+  // also fire when city-autocomplete picks a country (mousedown sets value)
+  upd();
+}
+_zipPlaceholderWire('origin_country', 'pickup_zip');
+_zipPlaceholderWire('dest_country', 'delivery_zip');

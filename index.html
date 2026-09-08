@@ -333,22 +333,6 @@
           <input id="destination" name="destination" type="text" placeholder=" " required>
           <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
         </div>
-
-        <div class="form__group-label" data-i18n="form.g.ship">Пратка</div>
-        <div class="field">
-          <label for="mode" data-i18n="form.mode">Вид транспорт <span class="req">*</span></label>
-          <select id="mode" name="mode" required>
-            <option value="" disabled selected data-i18n="form.mode.ph">Изберете…</option>
-            <option value="sea_fcl">Sea — FCL</option>
-            <option value="sea_lcl">Sea — LCL</option>
-            <option value="air">Air Freight</option>
-            <option value="air_charter">Air Charter</option>
-            <option value="obc">OBC (On-Board Courier)</option>
-            <option value="road_ftl">Road — FTL</option>
-            <option value="road_ltl">Road — LTL</option>
-          </select>
-          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
-        </div>
         <div class="field">
           <label for="incoterm" data-i18n="form.incoterm">Incoterm</label>
           <select id="incoterm" name="incoterm">
@@ -364,6 +348,22 @@
         <div class="field zip-only">
           <label for="delivery_zip" data-i18n="form.delivery_zip">Поштенски код — испорака</label>
           <input id="delivery_zip" name="delivery_zip" type="text" placeholder=" " autocomplete="postal-code">
+        </div>
+
+        <div class="form__group-label" data-i18n="form.g.ship">Пратка</div>
+        <div class="field">
+          <label for="mode" data-i18n="form.mode">Вид транспорт <span class="req">*</span></label>
+          <select id="mode" name="mode" required>
+            <option value="" disabled selected data-i18n="form.mode.ph">Изберете…</option>
+            <option value="sea_fcl">Sea — FCL</option>
+            <option value="sea_lcl">Sea — LCL</option>
+            <option value="air">Air Freight</option>
+            <option value="air_charter">Air Charter</option>
+            <option value="obc">OBC (On-Board Courier)</option>
+            <option value="road_ftl">Road — FTL</option>
+            <option value="road_ltl">Road — LTL</option>
+          </select>
+          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
         </div>
 
         <div class="field field--full">

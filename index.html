@@ -329,17 +329,17 @@
           <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
         </div>
         <div class="field">
-          <label for="destination" data-i18n="form.dest">Дестинација (земја / град / пристаниште) <span class="req">*</span></label>
-          <input id="destination" name="destination" type="text" placeholder=" " required>
-          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
-        </div>
-        <div class="field">
-          <label for="incoterm" data-i18n="form.incoterm">Incoterm</label>
+          <label for="incoterm" data-i18n="form.incoterm">Incoterm <span class="req">*</span></label>
           <select id="incoterm" name="incoterm">
             <option value="" disabled selected data-i18n="form.incoterm.ph">Изберете…</option>
             <option>EXW</option><option>FCA</option><option>FOB</option><option>CFR</option><option>CIF</option><option>CPT</option><option>CIP</option><option>DAP</option><option>DPU</option><option>DDP</option>
             <option value="unsure" data-i18n="form.incoterm.unsure">Не сум сигурен/на</option>
           </select>
+        </div>
+        <div class="field">
+          <label for="destination" data-i18n="form.dest">Дестинација (земја / град / пристаниште) <span class="req">*</span></label>
+          <input id="destination" name="destination" type="text" placeholder=" " required>
+          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
         </div>
         <div class="field zip-only">
           <label for="pickup_zip" data-i18n="form.pickup_zip">Поштенски код — подигнување</label>

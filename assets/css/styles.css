@@ -221,7 +221,7 @@ img{max-width:100%;display:block}
 .field{display:flex;flex-direction:column;gap:.35rem}
 .field--full{grid-column:1/-1}
 .field label{font-size:.82rem;font-weight:600;color:var(--navy)}
-.field .req{color:var(--amber-600)}
+.field .req{color:#cc3b3b;font-weight:700;font-size:1.1em}
 .field .hint{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);letter-spacing:.03em}
 .field input,.field select,.field textarea{
   font-family:var(--body);font-size:.95rem;color:var(--ink);

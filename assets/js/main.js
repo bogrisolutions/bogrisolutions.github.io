@@ -630,6 +630,8 @@ document.addEventListener('DOMContentLoaded', function() {
   _acCitySetup('dest_city', 'dest_country');
   _acZipSetup('pickup_zip', 'origin_country', 'origin_city');
   _acZipSetup('delivery_zip', 'dest_country', 'dest_city');
+  _zipPlaceholderWire('origin_country', 'pickup_zip');
+  _zipPlaceholderWire('dest_country', 'delivery_zip');
 });
 
 // BOG-241: postal code autocomplete for pickup_zip / delivery_zip
@@ -755,5 +757,3 @@ function _zipPlaceholderWire(countryInputId, zipInputId) {
   // also fire when city-autocomplete picks a country (mousedown sets value)
   upd();
 }
-_zipPlaceholderWire('origin_country', 'pickup_zip');
-_zipPlaceholderWire('dest_country', 'delivery_zip');

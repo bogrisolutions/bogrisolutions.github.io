@@ -345,3 +345,25 @@ img{max-width:100%;display:block}
   .dim-row__inp{width:48px;padding:7px 2px;font-size:.82rem}
   .dim-row__cbm{font-size:.72rem;min-width:52px}
 }
+
+/* ---------- equipment + temp regime ---------- */
+.equip-only,.temp-only{display:none}
+.form.show-equip .equip-only{display:flex}
+.form.show-temp .temp-only{display:flex;flex-direction:column;gap:.5rem}
+
+.temp-tog{display:flex;gap:5px;flex-wrap:wrap}
+.temp-tog button{
+  padding:.55rem .8rem;border-radius:8px;font-size:.82rem;font-weight:600;
+  border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s;white-space:nowrap;
+}
+.temp-tog button.act{border-color:var(--azure);color:var(--azure);background:rgba(27,127,176,.06)}
+.temp-tog button[data-v="frozen"].act{border-color:#2563eb;color:#2563eb;background:rgba(37,99,235,.06)}
+.temp-tog button[data-v="chilled"].act{border-color:var(--azure);color:var(--azure)}
+.temp-custom{display:flex;gap:8px;margin-top:4px}
+.temp-custom input{
+  font-family:var(--body);font-size:.92rem;padding:.65rem .8rem;
+  border:1.5px solid var(--line);border-radius:var(--radius-sm);background:var(--paper);
+  color:var(--ink);width:48%;
+}
+.temp-custom input:focus{outline:none;border-color:var(--azure);box-shadow:0 0 0 3px rgba(27,127,176,.16);background:#fff}

@@ -421,6 +421,30 @@
           <input id="container_qty" name="container_qty" type="number" min="1" step="1" placeholder=" ">
         </div>
 
+        <!-- equipment (mode-dependent) -->
+        <div class="field field--full equip-only" id="equipWrap">
+          <label data-i18n="form.equip">Опрема / тип возило</label>
+          <select id="equipment" name="equipment">
+            <option value="" data-i18n="form.equip.ph">— не е потребно —</option>
+          </select>
+        </div>
+
+        <!-- temperature regime -->
+        <div class="field field--full temp-only" id="tempWrap">
+          <label data-i18n="form.temp">🌡️ Температурен режим</label>
+          <div class="temp-tog" id="tempTog">
+            <button type="button" class="act" data-v="" onclick="rfqSetTemp(this)">Амбиент</button>
+            <button type="button" data-v="chilled" onclick="rfqSetTemp(this)" data-i18n="form.temp.chilled">Ладно +2/+8</button>
+            <button type="button" data-v="frozen" onclick="rfqSetTemp(this)" data-i18n="form.temp.frozen">Замрзнато -18/-25</button>
+            <button type="button" data-v="custom" onclick="rfqSetTemp(this)" data-i18n="form.temp.custom">Друго</button>
+          </div>
+          <div class="temp-custom" id="tempCustom" style="display:none">
+            <input type="number" id="temp_lo" placeholder="Мин °C" style="width:48%">
+            <input type="number" id="temp_hi" placeholder="Макс °C" style="width:48%">
+          </div>
+          <input type="hidden" id="temp_regime" name="temp_regime" value="">
+        </div>
+
         <div class="field">
           <label for="ready_date" data-i18n="form.ready">Подготвена на (датум)</label>
           <input id="ready_date" name="ready_date" type="date" placeholder=" ">

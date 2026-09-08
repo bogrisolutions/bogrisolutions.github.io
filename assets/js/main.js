@@ -56,7 +56,7 @@ const I18N = {
     "form.pickup_zip":"Поштенски код — подигнување","form.delivery_zip":"Поштенски код — испорака",
     "form.dg":"Опасни материи (ADR / IMDG / IATA DGR)","form.dg.un":"UN број / класа","form.dg.un.h":"(пр. UN1263, класа 3)",
     "form.goods":"Опис на стоката","form.weight":"Тежина (kg)","form.volume":"Волумен (m³ / CBM)",
-    "form.dims":"Димензии","form.dims.h":"(Д×Ш×В по колет)","form.dims.title":"📐 Димензии и наплатна тежина","form.dims.add":"＋ Додади димензии","form.pieces":"Парчиња / палети","form.ctype":"Тип контејнер","form.cqty":"Број контејнери",
+    "form.dims":"Димензии","form.dims.h":"(Д×Ш×В по колет)","form.dims.title":"📐 Димензии и наплатна тежина","form.dims.add":"＋ Додади димензии","form.pieces":"Парчиња / палети","form.equip":"Опрема / тип возило","form.equip.ph":"— не е потребно —","form.temp":"🌡️ Температурен режим","form.temp.chilled":"Ладно +2/+8","form.temp.frozen":"Замрзнато -18/-25","form.temp.custom":"Друго","form.ctype":"Тип контејнер","form.cqty":"Број контејнери",
     "form.ready":"Подготвена на (датум)","form.empty":" ","form.fastnote":"⚡ За Air Charter / OBC препорачуваме и телефонски повик.",
     "form.notes":"Дополнителни белешки","form.submit":"Испратете барање за понуда",
     "form.privacy":"Со испраќање се согласувате да Ве контактираме во врска со Вашето барање.",
@@ -109,7 +109,7 @@ const I18N = {
     "form.pickup_zip":"Pickup postal code","form.delivery_zip":"Delivery postal code",
     "form.dg":"Dangerous goods (ADR / IMDG / IATA DGR)","form.dg.un":"UN number / class","form.dg.un.h":"(e.g. UN1263, class 3)",
     "form.goods":"Goods description","form.weight":"Weight (kg)","form.volume":"Volume (m³ / CBM)",
-    "form.dims":"Dimensions","form.dims.h":"(L×W×H per package)","form.dims.title":"📐 Dimensions & chargeable weight","form.dims.add":"＋ Add dimensions","form.pieces":"Pieces / pallets","form.ctype":"Container type","form.cqty":"Number of containers",
+    "form.dims":"Dimensions","form.dims.h":"(L×W×H per package)","form.dims.title":"📐 Dimensions & chargeable weight","form.dims.add":"＋ Add dimensions","form.pieces":"Pieces / pallets","form.equip":"Equipment / vehicle type","form.equip.ph":"— not required —","form.temp":"🌡️ Temperature regime","form.temp.chilled":"Chilled +2/+8","form.temp.frozen":"Frozen -18/-25","form.temp.custom":"Custom","form.ctype":"Container type","form.cqty":"Number of containers",
     "form.ready":"Ready date","form.empty":" ","form.fastnote":"⚡ For Air Charter / OBC we recommend a phone call too.",
     "form.notes":"Additional notes","form.submit":"Send quote request",
     "form.privacy":"By submitting you agree to be contacted regarding your request.",
@@ -424,4 +424,67 @@ function rfqCalc() {
   // Auto-fill pieces if not manually set
   var pcEl = document.getElementById('pieces');
   if (pcEl && !pcEl.value && totalPcs > 0) pcEl.value = totalPcs;
+}
+
+/* ---------- equipment + temp regime ---------- */
+var _EQUIP = {
+  road: ['FTL','LTL','Partial','Van','Mega','Frigo','Curtainsider','Box','Flatbed'],
+  sea:  ['20GP','40GP','40HC','45HC','20RF','40RF','20OT','40OT','20FR','40FR'],
+  air:  ['Standard','ULD / PMC','Temperature controlled','Express']
+};
+
+// Modes that should show equipment selector
+var _EQUIP_MODES = ['road_ftl','road_ltl','sea_fcl','sea_lcl','air','air_charter'];
+// Modes that should show temp regime
+var _TEMP_MODES = ['road_ftl','road_ltl','sea_fcl','air','air_charter'];
+
+function rfqUpdateEquipTemp() {
+  var form = document.getElementById('rfqForm');
+  var modeVal = (document.getElementById('mode') || {}).value || '';
+  var modeKey = 'road';
+  if (modeVal.startsWith('sea')) modeKey = 'sea';
+  else if (modeVal === 'air' || modeVal === 'air_charter' || modeVal === 'obc') modeKey = 'air';
+
+  // Equipment
+  var showEquip = _EQUIP_MODES.indexOf(modeVal) !== -1;
+  form.classList.toggle('show-equip', showEquip);
+  if (showEquip) {
+    var sel = document.getElementById('equipment');
+    var cur = sel.value;
+    var phText = currentLang === 'mk' ? '— не е потребно —' : '— not required —';
+    sel.innerHTML = '<option value="">' + phText + '</option>';
+    (_EQUIP[modeKey] || []).forEach(function(v) {
+      var o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o);
+    });
+    if (cur) { sel.value = cur; if (!sel.value) sel.value = ''; }
+  }
+
+  // Temp regime
+  var showTemp = _TEMP_MODES.indexOf(modeVal) !== -1;
+  form.classList.toggle('show-temp', showTemp);
+}
+
+function rfqSetTemp(btn) {
+  btn.parentNode.querySelectorAll('button').forEach(function(b) { b.classList.remove('act'); });
+  btn.classList.add('act');
+  var v = btn.dataset.v || '';
+  var map = { chilled: '+2/+8', frozen: '-18/-25', '': '' };
+  var cust = document.getElementById('tempCustom');
+  var hidden = document.getElementById('temp_regime');
+  if (v === 'custom') {
+    cust.style.display = 'flex';
+    hidden.value = '';
+    // Wire custom inputs to update hidden field
+    document.getElementById('temp_lo').oninput = function() { rfqTempCustom(); };
+    document.getElementById('temp_hi').oninput = function() { rfqTempCustom(); };
+  } else {
+    cust.style.display = 'none';
+    hidden.value = map[v] || '';
+  }
+}
+
+function rfqTempCustom() {
+  var lo = (document.getElementById('temp_lo') || {}).value || '';
+  var hi = (document.getElementById('temp_hi') || {}).value || '';
+  document.getElementById('temp_regime').value = (lo || hi) ? (lo || '?') + ' / ' + (hi || '?') : '';
 }

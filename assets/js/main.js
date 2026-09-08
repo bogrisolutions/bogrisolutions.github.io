@@ -50,7 +50,7 @@ const I18N = {
     "contact.lead":"Пополнете го формуларот со деталите на Вашата пратка и ќе Ви одговориме со понуда во најкус можен рок. За итни пратки, јавете се директно.",
     "contact.k.phone":"Телефон","contact.k.email":"Е-пошта","contact.k.addr":"Адреса","contact.country":"Северна Македонија",
     "form.g.contact":"Контакт","form.name":"Име и презиме","form.company":"Компанија","form.email":"Е-пошта","form.phone":"Телефон",
-    "form.g.route":"Релација","form.origin":"Потекло (земја / град / пристаниште)","form.dest":"Дестинација (земја / град / пристаниште)",
+    "form.g.route":"Релација","form.origin":"Потекло (земја / град / пристаниште)","form.origin.country":"Земја на потекло","form.origin.city":"Потекло (град)","form.dest":"Дестинација (земја / град / пристаниште)","form.dest.country":"Земја на дестинација","form.dest.city":"Дестинација (град)",
     "form.g.ship":"Пратка","form.mode":"Вид транспорт","form.mode.ph":"Изберете…",
     "form.incoterm":"Incoterm","form.incoterm.ph":"Изберете…","form.incoterm.unsure":"Не сум сигурен/на",
     "form.pickup_zip":"Поштенски код — подигнување","form.delivery_zip":"Поштенски код — испорака",
@@ -103,7 +103,7 @@ const I18N = {
     "contact.lead":"Fill in the form with your shipment details and we'll reply with a quote as soon as possible. For urgent shipments, call us directly.",
     "contact.k.phone":"Phone","contact.k.email":"Email","contact.k.addr":"Address","contact.country":"North Macedonia",
     "form.g.contact":"Contact","form.name":"Full name","form.company":"Company","form.email":"Email","form.phone":"Phone",
-    "form.g.route":"Route","form.origin":"Origin (country / city / port)","form.dest":"Destination (country / city / port)",
+    "form.g.route":"Route","form.origin":"Origin (country / city / port)","form.origin.country":"Origin country","form.origin.city":"Origin (city)","form.dest":"Destination (country / city / port)","form.dest.country":"Destination country","form.dest.city":"Destination (city)",
     "form.g.ship":"Shipment","form.mode":"Transport mode","form.mode.ph":"Select…",
     "form.incoterm":"Incoterm","form.incoterm.ph":"Select…","form.incoterm.unsure":"Not sure",
     "form.pickup_zip":"Pickup postal code","form.delivery_zip":"Delivery postal code",
@@ -211,7 +211,7 @@ function setupForm(){
     form.classList.toggle("show-dg", dgChk.checked);
   });
 
-  const REQUIRED = ["contact_name","email","phone","origin","destination","mode","goods_description"];
+  const REQUIRED = ["contact_name","email","phone","origin_country","origin_city","dest_country","dest_city","mode","goods_description"];
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   function fieldWrap(el){ return el.closest(".field"); }
@@ -235,6 +235,13 @@ function setupForm(){
     const data = {};
     new FormData(form).forEach((v,k)=>{ data[k] = typeof v === "string" ? v.trim() : v; });
     delete data.website_url; // honeypot never forwarded
+    // combine country+city into single origin/destination for backend
+    if (data.origin_city || data.origin_country) {
+      data.origin = (data.origin_city || '') + (data.origin_country ? ', ' + data.origin_country : '');
+    }
+    if (data.dest_city || data.dest_country) {
+      data.destination = (data.dest_city || '') + (data.dest_country ? ', ' + data.dest_country : '');
+    }
     data.source = "website";
     data.lang = currentLang;
     data.submitted_at = new Date().toISOString();
@@ -250,8 +257,8 @@ function setupForm(){
       "Е-пошта/Email: "+(data.email||""),
       "Телефон/Phone: "+(data.phone||""),
       "",
-      "Потекло/Origin: "+(data.origin||""),
-      "Дестинација/Destination: "+(data.destination||""),
+      "Потекло/Origin: "+(data.origin_city||"")+" / "+(data.origin_country||""),
+      "Дестинација/Destination: "+(data.dest_city||"")+" / "+(data.dest_country||""),
       "Вид/Mode: "+(data.mode||""),
       "Incoterm: "+(data.incoterm||""),
       "Поштенски подигнување/Pickup ZIP: "+(data.pickup_zip||""),
@@ -488,3 +495,62 @@ function rfqTempCustom() {
   var hi = (document.getElementById('temp_hi') || {}).value || '';
   document.getElementById('temp_regime').value = (lo || hi) ? (lo || '?') + ' / ' + (hi || '?') : '';
 }
+
+/* ---------- country autocomplete (client-side, matches portal) ---------- */
+var _COUNTRIES=["Afghanistan","Albania","Algeria","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahrain","Bangladesh","Belarus","Belgium","Bolivia","Bosnia and Herzegovina","Brazil","Bulgaria","Cambodia","Cameroon","Canada","Chile","China","Colombia","Congo","Costa Rica","Croatia","Cuba","Cyprus","Czech Republic","Denmark","Dominican Republic","Ecuador","Egypt","El Salvador","Estonia","Ethiopia","Finland","France","Georgia","Germany","Ghana","Greece","Guatemala","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Ivory Coast","Japan","Jordan","Kazakhstan","Kenya","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Libya","Lithuania","Luxembourg","North Macedonia","Madagascar","Malaysia","Mali","Malta","Mexico","Moldova","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Nepal","Netherlands","New Zealand","Nicaragua","Nigeria","North Korea","Norway","Oman","Pakistan","Palestine","Panama","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saudi Arabia","Senegal","Serbia","Singapore","Slovakia","Slovenia","Somalia","South Africa","South Korea","Spain","Sri Lanka","Sudan","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Tunisia","Turkey","Turkmenistan","UAE","Uganda","UK","Ukraine","Uruguay","USA","Uzbekistan","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"];
+
+function _acSetup(inputId) {
+  var inp = document.getElementById(inputId);
+  if (!inp) return;
+  inp.parentNode.style.position = 'relative';
+  var dd = document.createElement('div');
+  dd.className = 'ac-dd';
+  dd.style.display = 'none';
+  inp.parentNode.appendChild(dd);
+  var _hi = -1, _items = [];
+
+  function render(arr, q) {
+    _items = arr; _hi = -1;
+    if (!arr.length) { dd.style.display = 'none'; return; }
+    var ql = q.toLowerCase();
+    dd.innerHTML = arr.map(function(v, i) {
+      var idx = v.toLowerCase().indexOf(ql);
+      var ht = idx >= 0 ? (v.slice(0, idx) + '<b>' + v.slice(idx, idx + q.length) + '</b>' + v.slice(idx + q.length)) : v;
+      return '<div class="ac-opt" data-i="' + i + '">' + ht + '</div>';
+    }).join('');
+    dd.style.display = '';
+    dd.querySelectorAll('.ac-opt').forEach(function(opt) {
+      opt.addEventListener('mousedown', function(e) { e.preventDefault(); pick(Number(this.dataset.i)); });
+    });
+  }
+  function pick(i) { if (!_items[i]) return; inp.value = _items[i]; dd.style.display = ''; dd.innerHTML = ''; }
+
+  inp.addEventListener('input', function() {
+    var v = inp.value.trim();
+    if (v.length < 1) { dd.style.display = 'none'; return; }
+    var ql = v.toLowerCase();
+    var matches = _COUNTRIES.filter(function(c) { return c.toLowerCase().indexOf(ql) >= 0; }).slice(0, 8);
+    render(matches, v);
+  });
+  inp.addEventListener('focus', function() {
+    if (inp.value.trim().length >= 1) inp.dispatchEvent(new Event('input'));
+  });
+  inp.addEventListener('blur', function() { setTimeout(function() { dd.style.display = 'none'; }, 150); });
+  inp.addEventListener('keydown', function(e) {
+    if (dd.style.display === 'none' || !_items.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); _hi = Math.min(_hi + 1, _items.length - 1); hilite(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); _hi = Math.max(_hi - 1, 0); hilite(); }
+    else if (e.key === 'Enter' && _hi >= 0) { e.preventDefault(); pick(_hi); }
+    else if (e.key === 'Escape') { dd.style.display = 'none'; }
+  });
+  function hilite() {
+    dd.querySelectorAll('.ac-opt').forEach(function(o, i) { o.classList.toggle('hi', i === _hi); });
+    if (_hi >= 0 && dd.children[_hi]) dd.children[_hi].scrollIntoView({ block: 'nearest' });
+  }
+}
+
+// Wire autocompletes on load
+document.addEventListener('DOMContentLoaded', function() {
+  _acSetup('origin_country');
+  _acSetup('dest_country');
+});

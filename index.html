@@ -323,12 +323,7 @@
         </div>
 
         <div class="form__group-label" data-i18n="form.g.route">Релација</div>
-        <div class="field">
-          <label for="origin" data-i18n="form.origin">Потекло (земја / град / пристаниште) <span class="req">*</span></label>
-          <input id="origin" name="origin" type="text" placeholder=" " required>
-          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
-        </div>
-        <div class="field">
+        <div class="field field--full">
           <label for="incoterm" data-i18n="form.incoterm">Incoterm <span class="req">*</span></label>
           <select id="incoterm" name="incoterm">
             <option value="" disabled selected data-i18n="form.incoterm.ph">Изберете…</option>
@@ -337,13 +332,28 @@
           </select>
         </div>
         <div class="field">
-          <label for="destination" data-i18n="form.dest">Дестинација (земја / град / пристаниште) <span class="req">*</span></label>
-          <input id="destination" name="destination" type="text" placeholder=" " required>
+          <label for="origin_country" data-i18n="form.origin.country">Земја на потекло <span class="req">*</span></label>
+          <input id="origin_country" name="origin_country" type="text" placeholder=" " required autocomplete="off">
+          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
+        </div>
+        <div class="field">
+          <label for="origin_city" data-i18n="form.origin.city">Потекло (град) <span class="req">*</span></label>
+          <input id="origin_city" name="origin_city" type="text" placeholder=" " required>
           <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
         </div>
         <div class="field zip-only">
           <label for="pickup_zip" data-i18n="form.pickup_zip">Поштенски код — подигнување</label>
           <input id="pickup_zip" name="pickup_zip" type="text" placeholder=" " autocomplete="postal-code">
+        </div>
+        <div class="field">
+          <label for="dest_country" data-i18n="form.dest.country">Земја на дестинација <span class="req">*</span></label>
+          <input id="dest_country" name="dest_country" type="text" placeholder=" " required autocomplete="off">
+          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
+        </div>
+        <div class="field">
+          <label for="dest_city" data-i18n="form.dest.city">Дестинација (град) <span class="req">*</span></label>
+          <input id="dest_city" name="dest_city" type="text" placeholder=" " required>
+          <span class="err" data-i18n="form.err.req">Ова поле е задолжително.</span>
         </div>
         <div class="field zip-only">
           <label for="delivery_zip" data-i18n="form.delivery_zip">Поштенски код — испорака</label>

@@ -367,3 +367,18 @@ img{max-width:100%;display:block}
   color:var(--ink);width:48%;
 }
 .temp-custom input:focus{outline:none;border-color:var(--azure);box-shadow:0 0 0 3px rgba(27,127,176,.16);background:#fff}
+
+/* ---------- country autocomplete dropdown ---------- */
+.ac-dd{
+  position:absolute;left:0;right:0;top:100%;z-index:30;
+  background:#fff;border:1.5px solid var(--line);border-top:0;
+  border-radius:0 0 var(--radius-sm) var(--radius-sm);
+  box-shadow:0 8px 20px rgba(11,49,76,.12);
+  max-height:220px;overflow-y:auto;
+}
+.ac-opt{
+  padding:.6rem .8rem;font-size:.92rem;color:var(--ink);cursor:pointer;
+  transition:background .1s;
+}
+.ac-opt:hover,.ac-opt.hi{background:var(--paper-2)}
+.ac-opt b{color:var(--azure);font-weight:700}

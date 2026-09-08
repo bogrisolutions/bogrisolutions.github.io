@@ -748,12 +748,11 @@ function _zipPlaceholderWire(countryInputId, zipInputId) {
   var co = document.getElementById(countryInputId);
   var zi = document.getElementById(zipInputId);
   if (!co || !zi) return;
-  function upd() {
+  var last = '';
+  setInterval(function() {
     var v = (co.value || '').trim();
+    if (v === last) return;
+    last = v;
     zi.placeholder = _ZIP_HINTS[v] || ' ';
-  }
-  co.addEventListener('input', upd);
-  co.addEventListener('change', upd);
-  // also fire when city-autocomplete picks a country (mousedown sets value)
-  upd();
+  }, 300);
 }

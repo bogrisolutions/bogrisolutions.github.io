@@ -56,7 +56,7 @@ const I18N = {
     "form.pickup_zip":"Поштенски код — подигнување","form.delivery_zip":"Поштенски код — испорака",
     "form.dg":"Опасни материи (ADR / IMDG / IATA DGR)","form.dg.un":"UN број / класа","form.dg.un.h":"(пр. UN1263, класа 3)",
     "form.goods":"Опис на стоката","form.weight":"Тежина (kg)","form.volume":"Волумен (m³ / CBM)",
-    "form.dims":"Димензии","form.dims.h":"(Д×Ш×В по колет)","form.ctype":"Тип контејнер","form.cqty":"Број контејнери",
+    "form.dims":"Димензии","form.dims.h":"(Д×Ш×В по колет)","form.dims.title":"📐 Димензии и наплатна тежина","form.dims.add":"＋ Додади димензии","form.pieces":"Парчиња / палети","form.ctype":"Тип контејнер","form.cqty":"Број контејнери",
     "form.ready":"Подготвена на (датум)","form.empty":" ","form.fastnote":"⚡ За Air Charter / OBC препорачуваме и телефонски повик.",
     "form.notes":"Дополнителни белешки","form.submit":"Испратете барање за понуда",
     "form.privacy":"Со испраќање се согласувате да Ве контактираме во врска со Вашето барање.",
@@ -109,7 +109,7 @@ const I18N = {
     "form.pickup_zip":"Pickup postal code","form.delivery_zip":"Delivery postal code",
     "form.dg":"Dangerous goods (ADR / IMDG / IATA DGR)","form.dg.un":"UN number / class","form.dg.un.h":"(e.g. UN1263, class 3)",
     "form.goods":"Goods description","form.weight":"Weight (kg)","form.volume":"Volume (m³ / CBM)",
-    "form.dims":"Dimensions","form.dims.h":"(L×W×H per package)","form.ctype":"Container type","form.cqty":"Number of containers",
+    "form.dims":"Dimensions","form.dims.h":"(L×W×H per package)","form.dims.title":"📐 Dimensions & chargeable weight","form.dims.add":"＋ Add dimensions","form.pieces":"Pieces / pallets","form.ctype":"Container type","form.cqty":"Number of containers",
     "form.ready":"Ready date","form.empty":" ","form.fastnote":"⚡ For Air Charter / OBC we recommend a phone call too.",
     "form.notes":"Additional notes","form.submit":"Send quote request",
     "form.privacy":"By submitting you agree to be contacted regarding your request.",
@@ -331,3 +331,97 @@ function setupForm(){
     }, { threshold: 0.05 }).observe(contact);
   }
 })();
+
+/* ---------- dims calculator (mirrors portal NBK pattern) ---------- */
+var _rfqDimCount = 0, _rfqUnit = 'cm';
+
+function rfqSetUnit(u, btn) {
+  _rfqUnit = u;
+  btn.parentNode.querySelectorAll('button').forEach(function(b) { b.classList.remove('act'); });
+  btn.classList.add('act');
+  rfqCalc();
+}
+
+function rfqAddDim() {
+  var i = _rfqDimCount++;
+  var el = document.getElementById('dimRows');
+  var row = document.createElement('div');
+  row.className = 'dim-row';
+  row.id = 'dr-' + i;
+  row.innerHTML =
+    '<input type="number" class="dim-row__qty" id="dq-' + i + '" value="1" min="1" placeholder="qty" oninput="rfqCalc()">' +
+    '<span class="dim-row__x">×</span>' +
+    '<input type="number" class="dim-row__inp" id="dl-' + i + '" placeholder="L" oninput="rfqCalc()">' +
+    '<span class="dim-row__x">×</span>' +
+    '<input type="number" class="dim-row__inp" id="dw-' + i + '" placeholder="W" oninput="rfqCalc()">' +
+    '<span class="dim-row__x">×</span>' +
+    '<input type="number" class="dim-row__inp" id="dh-' + i + '" placeholder="H" oninput="rfqCalc()">' +
+    '<span class="dim-row__cbm" id="dcbm-' + i + '"></span>' +
+    '<button type="button" class="dim-row__rm" onclick="rfqRmDim(' + i + ')" aria-label="Remove">✕</button>';
+  el.appendChild(row);
+  rfqCalc();
+}
+
+function rfqRmDim(i) {
+  var el = document.getElementById('dr-' + i);
+  if (el) el.remove();
+  rfqCalc();
+}
+
+function rfqCalc() {
+  var modeEl = document.getElementById('mode');
+  var mode = modeEl ? modeEl.value : '';
+  // Divisor by mode (air=6000, sea=5000/1000, road=3000)
+  var modeKey = 'road';
+  if (mode === 'air' || mode === 'air_charter' || mode === 'obc') modeKey = 'air';
+  else if (mode === 'sea_fcl' || mode === 'sea_lcl') modeKey = 'sea';
+  var div = { air: 6000, sea: 5000, road: 3000 }[modeKey] || 3000;
+  var divLabel = { air: '÷6000 air', sea: '÷5000 sea', road: '÷3000 road' }[modeKey] || '÷3000';
+  var toCm = _rfqUnit === 'in' ? 2.54 : 1;
+  var totalCbm = 0, dimParts = [], totalPcs = 0;
+
+  for (var i = 0; i < _rfqDimCount; i++) {
+    var row = document.getElementById('dr-' + i);
+    if (!row) continue;
+    var qty = Math.max(1, Number((document.getElementById('dq-' + i) || {}).value) || 1);
+    var l = Number((document.getElementById('dl-' + i) || {}).value) || 0;
+    var w = Number((document.getElementById('dw-' + i) || {}).value) || 0;
+    var h = Number((document.getElementById('dh-' + i) || {}).value) || 0;
+    var lCm = l * toCm, wCm = w * toCm, hCm = h * toCm;
+    var cbm = (lCm * wCm * hCm) / 1000000;
+    var rowCbm = cbm * qty;
+    totalCbm += rowCbm;
+    totalPcs += qty;
+    var lbl = document.getElementById('dcbm-' + i);
+    if (lbl) lbl.textContent = (l && w && h) ? rowCbm.toFixed(3) + ' m³' : '';
+    if (l && w && h) dimParts.push(qty + '× ' + Math.round(lCm) + '×' + Math.round(wCm) + '×' + Math.round(hCm) + ' cm');
+  }
+
+  var sumEl = document.getElementById('dimSum');
+  if (!sumEl) return;
+  if (totalCbm <= 0 && _rfqDimCount === 0) { sumEl.style.display = 'none'; return; }
+  sumEl.style.display = '';
+
+  var wt = Number((document.getElementById('weight_kg') || {}).value) || 0;
+  var volWt = Math.ceil((totalCbm * 1000000) / div);
+  var chg = Math.max(wt, volWt);
+  var isVolHeavy = volWt > wt && wt > 0;
+
+  sumEl.innerHTML =
+    '<div>Total volume: <span class="cv">' + totalCbm.toFixed(3) + ' CBM</span></div>' +
+    '<div>Actual weight: <span class="cv">' + (wt || '—') + ' kg</span></div>' +
+    '<div>Volumetric: <span class="cv">' + volWt + ' kg</span> <span class="formula">(' + divLabel + ')</span></div>' +
+    '<div class="chg">Chargeable: <span class="cv' + (isVolHeavy ? ' vol-warn' : '') + '">' + chg + ' kg</span>' +
+    (isVolHeavy ? ' <span class="formula">volume > weight</span>' : '') + '</div>';
+
+  // Auto-fill hidden fields
+  var volEl = document.getElementById('volume_cbm');
+  if (volEl) volEl.value = totalCbm > 0 ? totalCbm.toFixed(3) : '';
+  var chgEl = document.getElementById('chargeable_kg');
+  if (chgEl) chgEl.value = chg > 0 ? chg : '';
+  var dimEl = document.getElementById('dimensions');
+  if (dimEl) dimEl.value = dimParts.join('; ');
+  // Auto-fill pieces if not manually set
+  var pcEl = document.getElementById('pieces');
+  if (pcEl && !pcEl.value && totalPcs > 0) pcEl.value = totalPcs;
+}

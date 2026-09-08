@@ -315,3 +315,33 @@ img{max-width:100%;display:block}
 @media (max-width:720px){
   .fab-rfq{bottom:16px;right:16px;padding:.78rem 1.1rem;font-size:.86rem}
 }
+
+/* ---------- dims calculator ---------- */
+.dims-calc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px}
+.dims-calc__hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dims-calc__ti{font-size:.82rem;font-weight:700;color:var(--navy)}
+.dims-calc__unit{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.dims-calc__unit button{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.04em;padding:.35rem .65rem;border:0;background:transparent;color:var(--ink-soft);cursor:pointer}
+.dims-calc__unit button.act{background:var(--navy);color:#fff}
+.dims-calc__add{display:block;width:100%;background:none;border:1.5px dashed var(--line);border-radius:var(--radius-sm);padding:.6rem;font-family:var(--display);font-size:.85rem;font-weight:600;color:var(--azure);cursor:pointer;margin-top:6px;transition:border-color .15s,background .15s}
+.dims-calc__add:hover{border-color:var(--azure);background:rgba(27,127,176,.06)}
+
+.dim-row{display:flex;align-items:center;gap:0;margin-bottom:6px;flex-wrap:nowrap}
+.dim-row__qty{width:44px;background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:8px 4px;color:var(--ink);font-size:.88rem;text-align:center;flex-shrink:0}
+.dim-row__inp{width:56px;background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:8px 4px;color:var(--ink);font-size:.88rem;text-align:center;flex-shrink:0}
+.dim-row__x{color:var(--ink-soft);font-size:.88rem;font-weight:700;padding:0 3px;flex-shrink:0;user-select:none}
+.dim-row__cbm{font-size:.78rem;color:var(--azure);font-weight:600;margin-left:6px;white-space:nowrap;flex-shrink:0;min-width:60px;text-align:right}
+.dim-row__rm{background:none;border:none;color:#cc3b3b;font-size:1rem;cursor:pointer;padding:0 0 0 6px;flex-shrink:0;line-height:1}
+.dim-row__lbl{font-size:.62rem;color:var(--ink-soft);text-align:center;display:block;margin-top:-2px}
+
+.dims-calc__sum{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.82rem;line-height:1.8}
+.dims-calc__sum .cv{font-weight:700;color:var(--azure);font-variant-numeric:tabular-nums}
+.dims-calc__sum .chg{font-size:.92rem;font-weight:700;color:var(--navy);border-top:1px solid var(--line);padding-top:6px;margin-top:4px}
+.dims-calc__sum .formula{font-size:.68rem;color:var(--ink-soft);font-family:var(--mono)}
+.dims-calc__sum .vol-warn{color:#cc3b3b}
+
+@media (max-width:720px){
+  .dim-row__qty{width:38px;padding:7px 2px;font-size:.82rem}
+  .dim-row__inp{width:48px;padding:7px 2px;font-size:.82rem}
+  .dim-row__cbm{font-size:.72rem;min-width:52px}
+}

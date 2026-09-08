@@ -373,16 +373,32 @@
         </div>
 
         <div class="field">
-          <label for="weight_kg" data-i18n="form.weight">Тежина (kg)</label>
-          <input id="weight_kg" name="weight_kg" type="text" inputmode="decimal" placeholder=" ">
+          <label for="weight_kg" data-i18n="form.weight">Тежина (kg) <span class="req">*</span></label>
+          <input id="weight_kg" name="weight_kg" type="number" inputmode="decimal" placeholder=" " oninput="rfqCalc()">
         </div>
         <div class="field">
-          <label for="volume_cbm" data-i18n="form.volume">Волумен (m³ / CBM)</label>
-          <input id="volume_cbm" name="volume_cbm" type="text" inputmode="decimal" placeholder=" ">
+          <label for="pieces" data-i18n="form.pieces">Парчиња / палети</label>
+          <input id="pieces" name="pieces" type="number" min="1" placeholder=" ">
         </div>
+
+        <!-- dims calculator -->
         <div class="field field--full">
-          <label for="dimensions" data-i18n="form.dims">Димензии <span class="hint" data-i18n="form.dims.h">(Д×Ш×В по колет)</span></label>
-          <input id="dimensions" name="dimensions" type="text" placeholder=" ">
+          <div class="dims-calc" id="dimsCalc">
+            <div class="dims-calc__hd">
+              <span class="dims-calc__ti" data-i18n="form.dims.title">📐 Димензии и наплатна тежина</span>
+              <div class="dims-calc__unit">
+                <button type="button" class="act" onclick="rfqSetUnit('cm',this)">cm</button>
+                <button type="button" onclick="rfqSetUnit('in',this)">in</button>
+              </div>
+            </div>
+            <div id="dimRows"></div>
+            <button type="button" class="dims-calc__add" onclick="rfqAddDim()" data-i18n="form.dims.add">＋ Додади димензии</button>
+            <div class="dims-calc__sum" id="dimSum" style="display:none"></div>
+          </div>
+          <!-- hidden fields auto-filled by calculator -->
+          <input type="hidden" id="volume_cbm" name="volume_cbm" value="">
+          <input type="hidden" id="dimensions" name="dimensions" value="">
+          <input type="hidden" id="chargeable_kg" name="chargeable_kg" value="">
         </div>
 
         <div class="field field--full">

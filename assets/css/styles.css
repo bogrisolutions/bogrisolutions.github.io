@@ -291,3 +291,28 @@ img{max-width:100%;display:block}
   .footer__top{grid-template-columns:1fr}
   .brand__name small{display:none}
 }
+
+/* ---------- sticky RFQ FAB ---------- */
+.fab-rfq{
+  position:fixed;bottom:24px;right:24px;z-index:40;
+  display:inline-flex;align-items:center;gap:.55rem;
+  font-family:var(--display);font-weight:700;font-size:.92rem;
+  padding:.85rem 1.3rem;border-radius:999px;
+  background:var(--azure);color:#fff;
+  box-shadow:0 6px 24px rgba(27,127,176,.42),0 2px 6px rgba(0,0,0,.12);
+  text-decoration:none;
+  transform:translateY(80px);opacity:0;
+  transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s ease,background .15s ease;
+  pointer-events:none;
+  white-space:nowrap;
+}
+.fab-rfq.show{
+  transform:translateY(0);opacity:1;pointer-events:auto;
+}
+.fab-rfq:hover{background:var(--azure-600);text-decoration:none;transform:translateY(-2px)}
+.fab-rfq:active{transform:translateY(0)}
+.fab-rfq svg{width:20px;height:20px;flex-shrink:0}
+
+@media (max-width:720px){
+  .fab-rfq{bottom:16px;right:16px;padding:.78rem 1.1rem;font-size:.86rem}
+}

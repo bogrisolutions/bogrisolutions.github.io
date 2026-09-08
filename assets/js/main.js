@@ -502,14 +502,18 @@ var _COUNTRIES=["Afghanistan","Albania","Algeria","Angola","Argentina","Armenia"
 function _acSetup(inputId) {
   var inp = document.getElementById(inputId);
   if (!inp) return;
-  inp.parentNode.style.position = 'relative';
+  // Create dropdown as sibling right after the input (not after the field wrapper)
+  var wrap = document.createElement('div');
+  wrap.style.position = 'relative';
+  inp.parentNode.insertBefore(wrap, inp);
+  wrap.appendChild(inp);
   var dd = document.createElement('div');
   dd.className = 'ac-dd';
-  dd.style.display = 'none';
-  inp.parentNode.appendChild(dd);
+  dd.style.cssText = 'display:none;position:absolute;left:0;right:0;top:100%;z-index:100';
+  wrap.appendChild(dd);
   var _hi = -1, _items = [];
 
-  function render(arr, q) {
+  function show(arr, q) {
     _items = arr; _hi = -1;
     if (!arr.length) { dd.style.display = 'none'; return; }
     var ql = q.toLowerCase();
@@ -518,30 +522,35 @@ function _acSetup(inputId) {
       var ht = idx >= 0 ? (v.slice(0, idx) + '<b>' + v.slice(idx, idx + q.length) + '</b>' + v.slice(idx + q.length)) : v;
       return '<div class="ac-opt" data-i="' + i + '">' + ht + '</div>';
     }).join('');
-    dd.style.display = '';
+    dd.style.display = 'block';
     dd.querySelectorAll('.ac-opt').forEach(function(opt) {
       opt.addEventListener('mousedown', function(e) { e.preventDefault(); pick(Number(this.dataset.i)); });
+      opt.addEventListener('touchstart', function(e) { e.preventDefault(); pick(Number(this.dataset.i)); }, {passive:false});
     });
   }
-  function pick(i) { if (!_items[i]) return; inp.value = _items[i]; dd.style.display = ''; dd.innerHTML = ''; }
+  function hide() { dd.style.display = 'none'; dd.innerHTML = ''; _items = []; _hi = -1; }
+  function pick(i) { if (!_items[i]) return; inp.value = _items[i]; hide(); inp.dispatchEvent(new Event('change')); }
 
   inp.addEventListener('input', function() {
     var v = inp.value.trim();
-    if (v.length < 1) { dd.style.display = 'none'; return; }
+    if (v.length < 1) { hide(); return; }
     var ql = v.toLowerCase();
-    var matches = _COUNTRIES.filter(function(c) { return c.toLowerCase().indexOf(ql) >= 0; }).slice(0, 8);
-    render(matches, v);
+    show(_COUNTRIES.filter(function(c) { return c.toLowerCase().indexOf(ql) >= 0; }).slice(0, 8), v);
   });
   inp.addEventListener('focus', function() {
-    if (inp.value.trim().length >= 1) inp.dispatchEvent(new Event('input'));
+    var v = inp.value.trim();
+    if (v.length >= 1) {
+      var ql = v.toLowerCase();
+      show(_COUNTRIES.filter(function(c) { return c.toLowerCase().indexOf(ql) >= 0; }).slice(0, 8), v);
+    }
   });
-  inp.addEventListener('blur', function() { setTimeout(function() { dd.style.display = 'none'; }, 150); });
+  inp.addEventListener('blur', function() { setTimeout(hide, 200); });
   inp.addEventListener('keydown', function(e) {
     if (dd.style.display === 'none' || !_items.length) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); _hi = Math.min(_hi + 1, _items.length - 1); hilite(); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); _hi = Math.max(_hi - 1, 0); hilite(); }
     else if (e.key === 'Enter' && _hi >= 0) { e.preventDefault(); pick(_hi); }
-    else if (e.key === 'Escape') { dd.style.display = 'none'; }
+    else if (e.key === 'Escape') { hide(); }
   });
   function hilite() {
     dd.querySelectorAll('.ac-opt').forEach(function(o, i) { o.classList.toggle('hi', i === _hi); });
@@ -549,7 +558,6 @@ function _acSetup(inputId) {
   }
 }
 
-// Wire autocompletes on load
 document.addEventListener('DOMContentLoaded', function() {
   _acSetup('origin_country');
   _acSetup('dest_country');

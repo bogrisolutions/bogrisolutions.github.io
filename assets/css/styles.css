@@ -370,11 +370,11 @@ img{max-width:100%;display:block}
 
 /* ---------- country autocomplete dropdown ---------- */
 .ac-dd{
-  position:absolute;left:0;right:0;top:100%;z-index:30;
-  background:#fff;border:1.5px solid var(--line);border-top:0;
-  border-radius:0 0 var(--radius-sm) var(--radius-sm);
-  box-shadow:0 8px 20px rgba(11,49,76,.12);
-  max-height:220px;overflow-y:auto;
+  background:#fff;border:1.5px solid var(--azure);
+  border-radius:var(--radius-sm);
+  box-shadow:0 8px 24px rgba(11,49,76,.18);
+  max-height:200px;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .ac-opt{
   padding:.6rem .8rem;font-size:.92rem;color:var(--ink);cursor:pointer;

@@ -400,3 +400,6 @@ img{max-width:100%;display:block}
   .dims-calc .dim-row .dim-row__rm{grid-column:7;justify-self:end;padding:2px 4px}
   .dims-calc__hd{flex-wrap:wrap;gap:6px}
 }
+
+.dims-calc__cbmhd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.dims-calc__cbmhd label{margin:0}

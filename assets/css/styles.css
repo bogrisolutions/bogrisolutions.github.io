@@ -382,3 +382,21 @@ img{max-width:100%;display:block}
 }
 .ac-opt:hover,.ac-opt.hi{background:var(--paper-2)}
 .ac-opt b{color:var(--azure);font-weight:700}
+
+/* 2026-09-27 — dims calculator: Dimensions | CBM toggle + a layout that fits phones.
+   `.field input{width:100%}` beat the fixed box widths → qty took the whole row and L/W/H fell off-screen. */
+.dims-calc__mode{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;background:#fff;margin-bottom:10px}
+.dims-calc__mode button{font-size:.78rem;font-weight:600;padding:.4rem .9rem;border:0;background:transparent;color:var(--ink-soft);cursor:pointer}
+.dims-calc__mode button.act{background:var(--navy);color:#fff}
+.dims-calc__cbm{margin-bottom:6px}
+.dims-calc__cbm label{display:block;font-size:.78rem;font-weight:600;color:var(--navy);margin-bottom:4px}
+.dims-calc .dim-row{display:grid;grid-template-columns:52px auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto auto;align-items:center;column-gap:4px;margin-bottom:8px}
+.dims-calc .dim-row input{width:100%;min-width:0;padding:8px 4px;text-align:center;font-size:.9rem;border-radius:6px}
+.dims-calc .dim-row .dim-row__x{padding:0}
+.dims-calc .dim-row .dim-row__cbm{min-width:0;margin-left:4px}
+@media (max-width:520px){
+  .dims-calc .dim-row{grid-template-columns:48px auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);row-gap:2px}
+  .dims-calc .dim-row .dim-row__cbm{grid-column:1 / span 6;text-align:left;margin-left:2px}
+  .dims-calc .dim-row .dim-row__rm{grid-column:7;justify-self:end;padding:2px 4px}
+  .dims-calc__hd{flex-wrap:wrap;gap:6px}
+}

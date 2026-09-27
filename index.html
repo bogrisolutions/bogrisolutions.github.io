@@ -396,13 +396,21 @@
           <div class="dims-calc" id="dimsCalc">
             <div class="dims-calc__hd">
               <span class="dims-calc__ti" data-i18n="form.dims.title">📐 Димензии и наплатна тежина</span>
-              <div class="dims-calc__unit">
+              <div class="dims-calc__unit" id="unitToggle">
                 <button type="button" class="act" onclick="rfqSetUnit('cm',this)">cm</button>
                 <button type="button" onclick="rfqSetUnit('in',this)">in</button>
               </div>
             </div>
+            <div class="dims-calc__mode">
+              <button type="button" class="act" onclick="rfqSetVolMode('dims',this)" data-i18n="form.dims.byDims">Димензии</button>
+              <button type="button" onclick="rfqSetVolMode('cbm',this)" data-i18n="form.dims.byCbm">Вкупно CBM</button>
+            </div>
+            <div id="cbmDirect" class="dims-calc__cbm" style="display:none">
+              <label for="cbm_direct" data-i18n="form.dims.cbmLabel">Вкупен волумен (m³)</label>
+              <input id="cbm_direct" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" oninput="rfqCalc()">
+            </div>
             <div id="dimRows"></div>
-            <button type="button" class="dims-calc__add" onclick="rfqAddDim()" data-i18n="form.dims.add">＋ Додади димензии</button>
+            <button type="button" class="dims-calc__add" id="dimAddBtn" onclick="rfqAddDim()" data-i18n="form.dims.add">＋ Додади димензии</button>
             <div class="dims-calc__sum" id="dimSum" style="display:none"></div>
           </div>
           <!-- hidden fields auto-filled by calculator -->

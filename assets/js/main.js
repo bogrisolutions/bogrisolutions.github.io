@@ -56,7 +56,7 @@ const I18N = {
     "form.pickup_zip":"Поштенски код — подигнување","form.delivery_zip":"Поштенски код — испорака",
     "form.dg":"Опасни материи (ADR / IMDG / IATA DGR)","form.dg.un":"UN број / класа","form.dg.un.h":"(пр. UN1263, класа 3)",
     "form.goods":"Опис на стоката","form.weight":"Тежина (kg)","form.volume":"Волумен (m³ / CBM)",
-    "form.dims":"Димензии","form.dims.h":"(Д×Ш×В по колет)","form.dims.title":"📐 Димензии и наплатна тежина","form.dims.add":"＋ Додади димензии","form.pieces":"Парчиња / палети","form.equip":"Опрема / тип возило","form.equip.ph":"— не е потребно —","form.temp":"🌡️ Температурен режим","form.temp.chilled":"Ладно +2/+8","form.temp.frozen":"Замрзнато -18/-25","form.temp.custom":"Друго","form.ctype":"Тип контејнер","form.cqty":"Број контејнери",
+    "form.dims":"Димензии","form.dims.h":"(Д×Ш×В по колет)","form.dims.title":"📐 Димензии и наплатна тежина","form.dims.byDims":"Димензии","form.dims.byCbm":"Вкупно CBM","form.dims.cbmLabel":"Вкупен волумен (m³)","form.dims.add":"＋ Додади димензии","form.pieces":"Парчиња / палети","form.equip":"Опрема / тип возило","form.equip.ph":"— не е потребно —","form.temp":"🌡️ Температурен режим","form.temp.chilled":"Ладно +2/+8","form.temp.frozen":"Замрзнато -18/-25","form.temp.custom":"Друго","form.ctype":"Тип контејнер","form.cqty":"Број контејнери",
     "form.ready":"Подготвена на (датум)","form.empty":" ","form.fastnote":"⚡ За Air Charter / OBC препорачуваме и телефонски повик.",
     "form.notes":"Дополнителни белешки","form.submit":"Испратете барање за понуда",
     "form.privacy":"Со испраќање се согласувате да Ве контактираме во врска со Вашето барање.",
@@ -109,7 +109,7 @@ const I18N = {
     "form.pickup_zip":"Pickup postal code","form.delivery_zip":"Delivery postal code",
     "form.dg":"Dangerous goods (ADR / IMDG / IATA DGR)","form.dg.un":"UN number / class","form.dg.un.h":"(e.g. UN1263, class 3)",
     "form.goods":"Goods description","form.weight":"Weight (kg)","form.volume":"Volume (m³ / CBM)",
-    "form.dims":"Dimensions","form.dims.h":"(L×W×H per package)","form.dims.title":"📐 Dimensions & chargeable weight","form.dims.add":"＋ Add dimensions","form.pieces":"Pieces / pallets","form.equip":"Equipment / vehicle type","form.equip.ph":"— not required —","form.temp":"🌡️ Temperature regime","form.temp.chilled":"Chilled +2/+8","form.temp.frozen":"Frozen -18/-25","form.temp.custom":"Custom","form.ctype":"Container type","form.cqty":"Number of containers",
+    "form.dims":"Dimensions","form.dims.h":"(L×W×H per package)","form.dims.title":"📐 Dimensions & chargeable weight","form.dims.byDims":"Dimensions","form.dims.byCbm":"Total CBM","form.dims.cbmLabel":"Total volume (m³)","form.dims.add":"＋ Add dimensions","form.pieces":"Pieces / pallets","form.equip":"Equipment / vehicle type","form.equip.ph":"— not required —","form.temp":"🌡️ Temperature regime","form.temp.chilled":"Chilled +2/+8","form.temp.frozen":"Frozen -18/-25","form.temp.custom":"Custom","form.ctype":"Container type","form.cqty":"Number of containers",
     "form.ready":"Ready date","form.empty":" ","form.fastnote":"⚡ For Air Charter / OBC we recommend a phone call too.",
     "form.notes":"Additional notes","form.submit":"Send quote request",
     "form.privacy":"By submitting you agree to be contacted regarding your request.",
@@ -340,7 +340,19 @@ function setupForm(){
 })();
 
 /* ---------- dims calculator (mirrors portal NBK pattern) ---------- */
-var _rfqDimCount = 0, _rfqUnit = 'cm';
+var _rfqDimCount = 0, _rfqUnit = 'cm', _rfqVolMode = 'dims';
+
+/* 2026-09-27: Dimensions | Total CBM toggle — clients who know their CBM type it once. */
+function rfqSetVolMode(m, btn) {
+  _rfqVolMode = m === 'cbm' ? 'cbm' : 'dims';
+  btn.parentNode.querySelectorAll('button').forEach(function(b) { b.classList.remove('act'); });
+  btn.classList.add('act');
+  var byCbm = _rfqVolMode === 'cbm';
+  ['dimRows', 'dimAddBtn', 'unitToggle'].forEach(function(id) { var e = document.getElementById(id); if (e) e.style.display = byCbm ? 'none' : ''; });
+  var c = document.getElementById('cbmDirect'); if (c) c.style.display = byCbm ? '' : 'none';
+  if (byCbm) { var ci = document.getElementById('cbm_direct'); if (ci) ci.focus(); }
+  rfqCalc();
+}
 
 function rfqSetUnit(u, btn) {
   _rfqUnit = u;
@@ -387,7 +399,7 @@ function rfqCalc() {
   var toCm = _rfqUnit === 'in' ? 2.54 : 1;
   var totalCbm = 0, dimParts = [], totalPcs = 0;
 
-  for (var i = 0; i < _rfqDimCount; i++) {
+  for (var i = 0; _rfqVolMode === 'dims' && i < _rfqDimCount; i++) {
     var row = document.getElementById('dr-' + i);
     if (!row) continue;
     var qty = Math.max(1, Number((document.getElementById('dq-' + i) || {}).value) || 1);
@@ -404,9 +416,11 @@ function rfqCalc() {
     if (l && w && h) dimParts.push(qty + '× ' + Math.round(lCm) + '×' + Math.round(wCm) + '×' + Math.round(hCm) + ' cm');
   }
 
+  if (_rfqVolMode === 'cbm') { totalCbm = Math.max(0, Number((document.getElementById('cbm_direct') || {}).value) || 0); }
   var sumEl = document.getElementById('dimSum');
   if (!sumEl) return;
-  if (totalCbm <= 0 && _rfqDimCount === 0) { sumEl.style.display = 'none'; return; }
+  if (totalCbm <= 0 && (_rfqVolMode === 'cbm' || _rfqDimCount === 0)) { sumEl.style.display = 'none';
+    var v0 = document.getElementById('volume_cbm'); if (v0) v0.value = ''; return; }
   sumEl.style.display = '';
 
   var wt = Number((document.getElementById('weight_kg') || {}).value) || 0;
@@ -414,6 +428,19 @@ function rfqCalc() {
   var chg = Math.max(wt, volWt);
   var isVolHeavy = volWt > wt && wt > 0;
 
+  // Sea LCL is charged per W/M (1 cbm = 1,000 kg) — not a volumetric divisor
+  if (mode === 'sea_lcl') {
+    var wm = Math.max(totalCbm, wt / 1000);
+    sumEl.innerHTML =
+      '<div>Total volume: <span class="cv">' + totalCbm.toFixed(3) + ' CBM</span></div>' +
+      '<div>Actual weight: <span class="cv">' + (wt || '—') + ' kg</span> <span class="formula">(= ' + (wt / 1000).toFixed(3) + ' t)</span></div>' +
+      '<div class="chg">Chargeable: <span class="cv">' + wm.toFixed(2) + ' W/M</span> <span class="formula">max(CBM, t) · 1 CBM = 1,000 kg</span></div>';
+    var v1 = document.getElementById('volume_cbm'); if (v1) v1.value = totalCbm > 0 ? totalCbm.toFixed(3) : '';
+    var c1 = document.getElementById('chargeable_kg'); if (c1) c1.value = wm > 0 ? Math.round(wm * 1000) : '';
+    var d1 = document.getElementById('dimensions'); if (d1) d1.value = _rfqVolMode === 'cbm' ? ('total ' + totalCbm.toFixed(3) + ' CBM') : dimParts.join('; ');
+    var p1 = document.getElementById('pieces'); if (p1 && !p1.value && totalPcs > 0) p1.value = totalPcs;
+    return;
+  }
   sumEl.innerHTML =
     '<div>Total volume: <span class="cv">' + totalCbm.toFixed(3) + ' CBM</span></div>' +
     '<div>Actual weight: <span class="cv">' + (wt || '—') + ' kg</span></div>' +
@@ -427,7 +454,7 @@ function rfqCalc() {
   var chgEl = document.getElementById('chargeable_kg');
   if (chgEl) chgEl.value = chg > 0 ? chg : '';
   var dimEl = document.getElementById('dimensions');
-  if (dimEl) dimEl.value = dimParts.join('; ');
+  if (dimEl) dimEl.value = _rfqVolMode === 'cbm' ? ('total ' + totalCbm.toFixed(3) + ' CBM') : dimParts.join('; ');
   // Auto-fill pieces if not manually set
   var pcEl = document.getElementById('pieces');
   if (pcEl && !pcEl.value && totalPcs > 0) pcEl.value = totalPcs;

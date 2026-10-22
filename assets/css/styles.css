@@ -117,7 +117,9 @@ img{max-width:100%;display:block}
 .hero__lead{font-size:1.13rem;color:var(--ink-soft);max-width:46ch}
 .hero__cta{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.6rem}
 .hero__trust{display:flex;flex-wrap:wrap;gap:1.3rem;margin-top:1.8rem;font-family:var(--mono);font-size:.78rem;color:var(--ink-soft)}
-.hero__trust span{display:inline-flex;align-items:center;gap:.4rem}
+.hero__trust span,.hero__trust a{display:inline-flex;align-items:center;gap:.4rem}
+.hero__trust a{color:var(--azure-600);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px}
+.hero__trust a:hover{color:var(--navy)}
 .hero__trust b{color:var(--navy);font-weight:700}
 
 /* hero corridor visual */

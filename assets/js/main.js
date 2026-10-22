@@ -333,11 +333,15 @@ function setupForm(){
 (function(){
   const fab = document.getElementById('fabRfq');
   if (!fab) return;
-  const contact = document.getElementById('contact');
-  if (contact && 'IntersectionObserver' in window) {
-    new IntersectionObserver(([e]) => {
-      fab.classList.toggle('hide', e.isIntersecting);
-    }, { threshold: 0.05 }).observe(contact);
+  // Hide the floating button while another quote CTA (hero buttons) or the form itself is on screen.
+  const targets = [document.querySelector('.hero__cta'), document.getElementById('contact')].filter(Boolean);
+  if (targets.length && 'IntersectionObserver' in window) {
+    const seen = new Set();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => e.isIntersecting ? seen.add(e.target) : seen.delete(e.target));
+      fab.classList.toggle('hide', seen.size > 0);
+    }, { threshold: 0.05 });
+    targets.forEach(t => io.observe(t));
   }
 })();
 
